@@ -16,10 +16,6 @@ class Weather {
         println("wind_deg"+json.get("wind_deg").toString())
     }
 
-    fun parseMinutely(json: JSONObject){
-
-    }
-
     fun parseHourly(json: JSONObject){
 
     }
