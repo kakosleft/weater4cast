@@ -9,6 +9,7 @@ data class DailyWeather(
     val humidity: String,
     val wind_speed: String,
     val wind_deg: String,
+    val description: String,
     val icon: String,
-    val uri: String
+    val uvi: String
 )

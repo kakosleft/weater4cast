@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:orientation="horizontal"
+    tools:context=".fragments.FragmentHeader">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="wind : "
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/head_wind_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="speed"
+                android:textSize="25dp" />
+
+
+            <ImageView
+                android:id="@+id/head_wind_deg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_send" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="feels like : "
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/head_feels_like_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="+21"
+                android:textSize="25dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="humidity : "
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/head_humidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="21"
+                android:textSize="25dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="visibility : "
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/head_visibility"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="21"
+                android:textSize="25dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/head_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="description"
+            android:textSize="25dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/head_weather_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ico01d"/>
+
+            <TextView
+                android:id="@+id/head_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="temp"
+                android:text="+23"
+                android:textSize="60dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
