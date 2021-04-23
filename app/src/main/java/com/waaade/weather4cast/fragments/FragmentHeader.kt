@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.waaade.weather4cast.MainActivity
 import com.waaade.weather4cast.R
+import com.waaade.weather4cast.tools.IconSetter
 
 class FragmentHeader() : Fragment() {
 
@@ -44,35 +45,13 @@ class FragmentHeader() : Fragment() {
         humidityTextView.text = currentWeather.humidity
         visibilityTextView.text = currentWeather.visibility
         feelsLikeTextView.text = currentWeather.feels_like
-        weatherIcon.setImageResource(setIcom(currentWeather.icon))
+        weatherIcon.setImageResource(IconSetter().setWeather(currentWeather.icon))
+        windDegImagetView.setImageResource(IconSetter().setWindDegIcon(currentWeather.wind_deg))
 
         return view
     }
 
-    private fun setIcom(icon: String): Int {
-        var i: Int
-        when(icon){
-            "01d"-> i = R.drawable.ico01d
-            "02d"-> i = R.drawable.ico02d
-            "03d"-> i = R.drawable.ico03d
-            "04d"-> i = R.drawable.ico04d
-            "09d"-> i = R.drawable.ico09d
-            "10d"-> i = R.drawable.ico10d
-            "11d"-> i = R.drawable.ico11d
-            "13d"-> i = R.drawable.ico13d
-            "50d"-> i = R.drawable.ico50d
-            "01n"-> i = R.drawable.ico01n
-            "02n"-> i = R.drawable.ico02n
-            "03n"-> i = R.drawable.ico03n
-            "04n"-> i = R.drawable.ico04n
-            "09n"-> i = R.drawable.ico09n
-            "10n"-> i = R.drawable.ico10n
-            "11n"-> i = R.drawable.ico11n
-            "13n"-> i = R.drawable.ico13n
-            else -> i = R.drawable.ico50n
-        }
-        return i
-    }
+
 
 
 

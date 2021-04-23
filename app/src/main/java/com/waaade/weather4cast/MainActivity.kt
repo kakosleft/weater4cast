@@ -19,6 +19,8 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.waaade.weather4cast.fragments.FragmentBodyDaily
+import com.waaade.weather4cast.fragments.FragmentBodyHourly
 import com.waaade.weather4cast.fragments.FragmentHeader
 import com.waaade.weather4cast.models.*
 import okhttp3.*
@@ -44,10 +46,9 @@ class MainActivity : AppCompatActivity() {
         requestPermissionsGPS()
         getLocation()
         if (cacheCurrent != "null" && cacheDaily != "null" && cacheHourly != "null") {
-//            todo
+
         } else {
             getLocation()
-//            CoroutineScope(Default).launch {
             if (locationGps != null) {
                 callWeathr(locationGps!!)
             } else if (locationNetwork != null) {
@@ -59,6 +60,16 @@ class MainActivity : AppCompatActivity() {
     fun setHeadFragment() {
         val fragmentHeader = FragmentHeader()
         supportFragmentManager.beginTransaction().replace(R.id.header_layout, fragmentHeader).commit()
+    }
+
+    fun setBodyHourlyFragment(){
+        val fragmentBodyHourly = FragmentBodyHourly()
+        supportFragmentManager.beginTransaction().replace(R.id.body_layout, fragmentBodyHourly).commit()
+    }
+
+    fun setBodyDainlyFragment(){
+        val fragmentBodyDaily = FragmentBodyDaily()
+        supportFragmentManager.beginTransaction().replace(R.id.body_layout, fragmentBodyDaily).commit()
     }
 
     private fun callWeathr(location: Location) {
@@ -212,6 +223,7 @@ class MainActivity : AppCompatActivity() {
                     parseDaily(JSONObject(res).getJSONArray("daily"))
                     runOnUiThread {
                         setHeadFragment()
+                        setBodyHourlyFragment()
                     }
                 }
 
@@ -238,14 +250,14 @@ class MainActivity : AppCompatActivity() {
                     uvi = json.get("uvi").toString()
             )
 
-            MainActivity.WeatherData.current = currentWeather
-            println(MainActivity.WeatherData.current)
+            WeatherData.current = currentWeather
+            println(WeatherData.current)
 
         }
 
         fun parseHourly(json: JSONArray) {
 
-            MainActivity.WeatherData.hourly.clear()
+            WeatherData.hourly.clear()
 
             for (i in 0 until json.length()) {
 
@@ -275,14 +287,14 @@ class MainActivity : AppCompatActivity() {
                         description = description,
                         icon = icon
                 )
-                MainActivity.WeatherData.hourly.add(hourlyWeather)
+                WeatherData.hourly.add(hourlyWeather)
             }
 
-            println(MainActivity.WeatherData.hourly)
+            println(WeatherData.hourly)
         }
 
         fun parseDaily(json: JSONArray) {
-            MainActivity.WeatherData.daily.clear()
+            WeatherData.daily.clear()
 
             for (i in 0 until json.length()) {
 
@@ -318,9 +330,9 @@ class MainActivity : AppCompatActivity() {
                         uvi = qwe.get("uvi").toString()
                 )
 
-                MainActivity.WeatherData.daily.add(dailyWeather)
+                WeatherData.daily.add(dailyWeather)
             }
-            println(MainActivity.WeatherData.daily)
+            println(WeatherData.daily)
 
         }
 
