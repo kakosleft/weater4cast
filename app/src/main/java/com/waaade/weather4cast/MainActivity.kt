@@ -17,6 +17,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.waaade.weather4cast.fragments.FragmentBodyDaily
@@ -35,10 +36,15 @@ class MainActivity : AppCompatActivity() {
     private var locationGps: Location? = null
     private var locationNetwork: Location? = null
 
+    private lateinit var buttonHourly: Button
+    private lateinit var buttonDaily: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        initButtons()
 
         val cacheDaily = getCahe("daily")
         val cacheHourly = getCahe("hourly")
@@ -54,6 +60,19 @@ class MainActivity : AppCompatActivity() {
             } else if (locationNetwork != null) {
                 callWeathr(locationNetwork!!)
             }
+        }
+    }
+
+    private fun initButtons() {
+        buttonDaily = findViewById(R.id.btn_daily)
+        buttonHourly = findViewById(R.id.btn_hourly)
+
+        buttonHourly.setOnClickListener {
+            setBodyHourlyFragment()
+        }
+
+        buttonDaily.setOnClickListener {
+            setBodyDainlyFragment()
         }
     }
 

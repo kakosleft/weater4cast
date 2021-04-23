@@ -21,11 +21,15 @@
 
         <Button
             android:id="@+id/btn_hourly"
+            android:text="today"
+            android:layout_marginHorizontal="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btn_daily"
+            android:text="7 days"
+            android:layout_marginHorizontal="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
