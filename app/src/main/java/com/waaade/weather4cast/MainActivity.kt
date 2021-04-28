@@ -10,16 +10,16 @@ package com.waaade.weather4cast
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.waaade.weather4cast.fragments.FragmentBodyDaily
 import com.waaade.weather4cast.fragments.FragmentBodyHourly
 import com.waaade.weather4cast.fragments.FragmentHeader
@@ -45,21 +45,33 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initButtons()
-
-        val cacheDaily = getCahe("daily")
-        val cacheHourly = getCahe("hourly")
-        val cacheCurrent = getCahe("current")
         requestPermissionsGPS()
         getLocation()
-        if (cacheCurrent != "null" && cacheDaily != "null" && cacheHourly != "null") {
 
+        if (getCache("Weather_current") != "null") {
+            runWithCache()
         } else {
-            getLocation()
-            if (locationGps != null) {
-                callWeathr(locationGps!!)
-            } else if (locationNetwork != null) {
-                callWeathr(locationNetwork!!)
-            }
+           runOnline()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+    }
+
+    private fun runWithCache() {
+        getWeatherCache()
+        setHeadFragment()
+        setBodyHourlyFragment()
+    }
+
+    private fun runOnline(){
+        getLocation()
+        if (locationGps != null) {
+            callWeather(locationGps!!)
+        } else if (locationNetwork != null) {
+            callWeather(locationNetwork!!)
         }
     }
 
@@ -72,26 +84,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonDaily.setOnClickListener {
-            setBodyDainlyFragment()
+            setBodyDailyFragment()
         }
     }
 
-    fun setHeadFragment() {
+    private fun setHeadFragment() {
         val fragmentHeader = FragmentHeader()
         supportFragmentManager.beginTransaction().replace(R.id.header_layout, fragmentHeader).commit()
     }
 
-    fun setBodyHourlyFragment(){
+    private fun setBodyHourlyFragment() {
         val fragmentBodyHourly = FragmentBodyHourly()
         supportFragmentManager.beginTransaction().replace(R.id.body_layout, fragmentBodyHourly).commit()
     }
 
-    fun setBodyDainlyFragment(){
+    private fun setBodyDailyFragment() {
         val fragmentBodyDaily = FragmentBodyDaily()
         supportFragmentManager.beginTransaction().replace(R.id.body_layout, fragmentBodyDaily).commit()
     }
 
-    private fun callWeathr(location: Location) {
+    private fun callWeather(location: Location) {
         val weather = Weather(
                 location.latitude.toString(),
                 location.longitude.toString()
@@ -108,12 +120,16 @@ class MainActivity : AppCompatActivity() {
         hasGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
-        if (hasGps) {
-            getLocationByGPS()
-        } else if (hasNetwork) {
-            getLocationByNetwork()
-        } else {
-            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        when {
+            hasGps -> {
+                getLocationByGPS()
+            }
+            hasNetwork -> {
+                getLocationByNetwork()
+            }
+            else -> {
+                locationGps = getLocationCache()
+            }
         }
     }
 
@@ -136,8 +152,10 @@ class MainActivity : AppCompatActivity() {
 
         val localGpsLocation =
                 locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        if (localGpsLocation != null)
+        if (localGpsLocation != null) {
+            saveLocationCache(localGpsLocation)
             locationGps = localGpsLocation
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -158,11 +176,13 @@ class MainActivity : AppCompatActivity() {
 
         val localNetworkLocation =
                 locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-        if (localNetworkLocation != null)
+        if (localNetworkLocation != null) {
+            saveLocationCache(localNetworkLocation)
             locationNetwork = localNetworkLocation
+        }
     }
 
-    private fun checkPrermissions(): Boolean {
+    private fun checkPermissions(): Boolean {
         return ActivityCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -173,7 +193,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestPermissionsGPS() {
-        if (!checkPrermissions()) {
+        if (!checkPermissions()) {
             ActivityCompat.requestPermissions(
                     this,
                     arrayOf(
@@ -185,7 +205,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setCache(key: String, value_json: String) {
+    private fun setCache(key: String, value_json: String) {
         val sharedPref = this.getPreferences(Context.MODE_PRIVATE) ?: return
         with(sharedPref.edit()) {
             putString(key, value_json)
@@ -193,9 +213,54 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getCahe(key: String): String {
+    private fun getCache(key: String): String {
         val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
         return sharedPref.getString(key, "null").toString()
+    }
+
+    private fun saveLocationCache(location: Location) {
+        setCache("Location_provider", location.provider.toString())
+        setCache("Location_lat", location.latitude.toString())
+        setCache("Location_lon", location.longitude.toString())
+    }
+
+    private fun getLocationCache(): Location? {
+        val loc = Location(getCache("Location_provider"))
+        loc.latitude = getCache("Location_lat").toDouble()
+        loc.longitude = getCache("Location_lon").toDouble()
+        return if (loc.provider == "null") {
+            null
+        } else {
+            loc
+        }
+    }
+
+    private fun saveWeatherCache() {
+        val daily = Gson().toJson(WeatherData.daily)
+        val hourly = Gson().toJson(WeatherData.hourly)
+        val current = Gson().toJson(WeatherData.current)
+
+        setCache("Weather_daily", daily)
+        setCache("Weather_hourly", hourly)
+        setCache("Weather_current", current)
+    }
+
+    private fun getWeatherCache(){
+        val dailyCache = getCache("Weather_daily")
+        val hourlyCache = getCache("Weather_hourly")
+        val currenCache = getCache("Weather_current")
+
+        val hourlyTypeToken = object : TypeToken<List<HourlyWeather>>() { }.type
+        val dailyTypeToken = object : TypeToken<List<DailyWeather>>() { }.type
+        val currentTypeToken = object : TypeToken<CurrentWeather>() { }.type
+
+        WeatherData.hourly = Gson().fromJson<List<HourlyWeather>>(hourlyCache, hourlyTypeToken).toMutableList()
+        WeatherData.daily = Gson().fromJson<List<DailyWeather>>(dailyCache, dailyTypeToken).toMutableList()
+        WeatherData.current = Gson().fromJson<CurrentWeather>(currenCache, currentTypeToken)
+
+        println(WeatherData.daily)
+        println(WeatherData.hourly)
+        println(WeatherData.current)
     }
 
     object WeatherData {
@@ -216,20 +281,19 @@ class MainActivity : AppCompatActivity() {
         var daily: MutableList<DailyWeather> = ArrayList()
     }
 
-    inner @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    class Weather(lat: String, lon: String) {
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    inner class Weather(lat: String, lon: String) {
 
         var okHttpClient: OkHttpClient = OkHttpClient()
-        lateinit var json: JSONObject
 
-        val apiKey = API_KEY().key
+        private val apiKey = API_KEY().key
 
-        val URL =
+        private val URL =
                 "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&units=metric&appid=$apiKey"
 
         fun getWeather() {
 
-
+            println("_________$URL")
             val request: Request = Request.Builder().url(URL).build()
             okHttpClient.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call?, e: IOException?) {
@@ -244,6 +308,7 @@ class MainActivity : AppCompatActivity() {
                         setHeadFragment()
                         setBodyHourlyFragment()
                     }
+                    saveWeatherCache()
                 }
 
             })
@@ -286,11 +351,11 @@ class MainActivity : AppCompatActivity() {
 
                 val dt = qwe.get("dt").toString()
                 val temp = qwe.get("temp").toString()
-                val feels_like = qwe.get("feels_like").toString()
+                val feelsLike = qwe.get("feels_like").toString()
                 val humidity = qwe.get("humidity").toString()
                 val uvi = qwe.get("uvi").toString()
-                val wind_speed = qwe.get("wind_speed").toString()
-                val wind_deg = qwe.get("wind_deg").toString()
+                val windSpeed = qwe.get("wind_speed").toString()
+                val windDeg = qwe.get("wind_deg").toString()
 
                 val description = zxc.get("description").toString()
                 val icon = zxc.get("icon").toString()
@@ -298,11 +363,11 @@ class MainActivity : AppCompatActivity() {
                 val hourlyWeather = HourlyWeather(
                         dt = dt,
                         temp = temp,
-                        feels_like = feels_like,
+                        feels_like = feelsLike,
                         humidity = humidity,
                         uvi = uvi,
-                        wind_speed = wind_speed,
-                        wind_deg = wind_deg,
+                        wind_speed = windSpeed,
+                        wind_deg = windDeg,
                         description = description,
                         icon = icon
                 )
@@ -321,7 +386,7 @@ class MainActivity : AppCompatActivity() {
                 val zxc = qwe.getJSONArray("weather").getJSONObject(0)
 
                 val temp = qwe.getJSONObject("temp")
-                val feels_like = qwe.getJSONObject("feels_like")
+                val feelsLike = qwe.getJSONObject("feels_like")
 
                 val dailyWeather = DailyWeather(
                         dt = qwe.get("dt").toString(),
@@ -336,10 +401,10 @@ class MainActivity : AppCompatActivity() {
                                 morn = temp.get("morn").toString()
                         ),
                         feels_like = FeelsLike(
-                                day = feels_like.get("day").toString(),
-                                eve = feels_like.get("eve").toString(),
-                                morn = feels_like.get("morn").toString(),
-                                night = feels_like.get("night").toString()
+                                day = feelsLike.get("day").toString(),
+                                eve = feelsLike.get("eve").toString(),
+                                morn = feelsLike.get("morn").toString(),
+                                night = feelsLike.get("night").toString()
                         ),
                         humidity = qwe.get("humidity").toString(),
                         wind_speed = qwe.get("wind_speed").toString(),
