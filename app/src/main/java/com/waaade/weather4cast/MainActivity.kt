@@ -28,6 +28,8 @@ import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     lateinit var locationManager: LocationManager
@@ -43,27 +45,41 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         initButtons()
         requestPermissionsGPS()
         getLocation()
-
-        if (getCache("Weather_current") != "null") {
-            runWithCache()
-        } else {
-           runOnline()
-        }
     }
 
     override fun onStart() {
         super.onStart()
 
+        if (getCache("Weather_current") != "null") {
+            runWithCache()
+        } else {
+            runOnline()
+        }
     }
 
     private fun runWithCache() {
         getWeatherCache()
         setHeadFragment()
         setBodyHourlyFragment()
+        checkCacheUpToDate()
+    }
+
+    private fun checkCacheUpToDate(){
+        println(WeatherData.current.dt)
+        val newDate: Long = Date().time / 1000
+        println(newDate)
+        val oldDate: Long = Date(WeatherData.current.dt.toLong()).time
+
+
+        val seconds: Long = (newDate - oldDate)
+        println(seconds)
+        if (seconds > 600){
+            runOnline()
+        }
+
     }
 
     private fun runOnline(){
@@ -275,6 +291,7 @@ class MainActivity : AppCompatActivity() {
                 "null",
                 "null",
                 "null",
+                "null",
                 "null"
         )
         var hourly: MutableList<HourlyWeather> = ArrayList()
@@ -321,6 +338,7 @@ class MainActivity : AppCompatActivity() {
             val asd = qwe.getJSONObject(0)
 
             val currentWeather = CurrentWeather(
+                    dt = json.get("dt").toString(),
                     sunrise = json.get("sunrise").toString(),
                     sunset = json.get("sunset").toString(),
                     temp = json.get("temp").toString(),
