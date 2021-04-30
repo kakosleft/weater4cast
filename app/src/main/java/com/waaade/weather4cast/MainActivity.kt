@@ -15,9 +15,13 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.view.View
+import android.widget.AbsSeekBar
 import android.widget.Button
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.waaade.weather4cast.fragments.FragmentBodyDaily
@@ -40,14 +44,25 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var buttonHourly: Button
     private lateinit var buttonDaily: Button
+    private lateinit var swipper: SwipeRefreshLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        refreshScreenListener()
+
         initButtons()
         requestPermissionsGPS()
         getLocation()
+    }
+
+    private fun refreshScreenListener() {
+        swipper = findViewById(R.id.swipeToRefresh)
+        swipper.setOnRefreshListener {
+            runOnline()
+        }
     }
 
     override fun onStart() {
@@ -324,6 +339,7 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
                         setHeadFragment()
                         setBodyHourlyFragment()
+                        swipper.isRefreshing = false
                     }
                     saveWeatherCache()
                 }

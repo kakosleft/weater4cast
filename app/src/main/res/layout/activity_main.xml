@@ -1,45 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="MissingClass">
 
-    <FrameLayout
-        android:id="@+id/header_layout"
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeToRefresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/btn_hourly"
-            android:text="today"
-            android:layout_marginHorizontal="30dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <FrameLayout
+                android:id="@+id/header_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/btn_daily"
-            android:text="7 days"
-            android:layout_marginHorizontal="30dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_hourly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="30dp"
+                    android:text="today" />
+
+                <Button
+                    android:id="@+id/btn_daily"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="30dp"
+                    android:text="7 days" />
 
 
-    </LinearLayout>
+            </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/body_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <FrameLayout
+                android:id="@+id/body_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
