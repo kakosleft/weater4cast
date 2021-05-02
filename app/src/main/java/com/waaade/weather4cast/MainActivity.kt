@@ -15,10 +15,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.view.View
-import android.widget.AbsSeekBar
 import android.widget.Button
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -32,6 +29,7 @@ import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -311,6 +309,7 @@ class MainActivity : AppCompatActivity() {
         )
         var hourly: MutableList<HourlyWeather> = ArrayList()
         var daily: MutableList<DailyWeather> = ArrayList()
+        var timezone = ""
     }
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -333,6 +332,7 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onResponse(call: Call?, response: Response?) {
                     val res = response?.body()?.string()
+                    WeatherData.timezone = JSONObject(res).get("timezone").toString()
                     parseCurrent(JSONObject(res).getJSONObject("current"))
                     parseHourly(JSONObject(res).getJSONArray("hourly"))
                     parseDaily(JSONObject(res).getJSONArray("daily"))
@@ -349,7 +349,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun parseCurrent(json: JSONObject) {
-
             val qwe = json.getJSONArray("weather")
             val asd = qwe.getJSONObject(0)
 
@@ -357,11 +356,11 @@ class MainActivity : AppCompatActivity() {
                     dt = json.get("dt").toString(),
                     sunrise = json.get("sunrise").toString(),
                     sunset = json.get("sunset").toString(),
-                    temp = json.get("temp").toString(),
-                    feels_like = json.get("feels_like").toString(),
+                    temp = parseTemp(json.get("temp").toString()),
+                    feels_like = parseTemp(json.get("feels_like").toString()),
                     humidity = json.get("humidity").toString(),
                     visibility = json.get("visibility").toString(),
-                    wind_speed = json.get("wind_speed").toString(),
+                    wind_speed = "${json.get("wind_speed").toString().toDouble().toInt()} km/h",
                     wind_deg = json.get("wind_deg").toString(),
                     description = asd.get("description").toString(),
                     icon = asd.get("icon").toString(),
@@ -377,25 +376,39 @@ class MainActivity : AppCompatActivity() {
 
             WeatherData.hourly.clear()
 
-            for (i in 0 until json.length()) {
+            for (i in 1 until 25) {
 
                 val qwe = json.getJSONObject(i)
                 val asd = qwe.getJSONArray("weather")
                 val zxc = asd.getJSONObject(0)
 
+                val wind = qwe.get("wind_speed").toString().toDouble().toInt()
                 val dt = qwe.get("dt").toString()
-                val temp = qwe.get("temp").toString()
-                val feelsLike = qwe.get("feels_like").toString()
+                val temp = parseTemp(qwe.get("temp").toString())
+                val feelsLike = parseTemp(qwe.get("feels_like").toString())
                 val humidity = qwe.get("humidity").toString()
                 val uvi = qwe.get("uvi").toString()
-                val windSpeed = qwe.get("wind_speed").toString()
+                val windSpeed = "$wind"
                 val windDeg = qwe.get("wind_deg").toString()
 
                 val description = zxc.get("description").toString()
                 val icon = zxc.get("icon").toString()
 
+                val sdf = SimpleDateFormat("HH:mm")
+
+                var now = Calendar.getInstance()
+                var dt_ = Calendar.getInstance()
+                dt_.timeInMillis = dt.toLong() * 1000
+
+                var day = if(now.get(Calendar.DATE) == dt_.get(Calendar.DATE)){
+                    "today"
+                }else{
+                    "tomorrow"
+                }
+
                 val hourlyWeather = HourlyWeather(
-                        dt = dt,
+                        day = day,
+                        dt = sdf.format(dt.toLong() * 1000),
                         temp = temp,
                         feels_like = feelsLike,
                         humidity = humidity,
@@ -409,6 +422,17 @@ class MainActivity : AppCompatActivity() {
             }
 
             println(WeatherData.hourly)
+        }
+
+        private fun parseTemp(qwe: String): String {
+            val tmp = qwe.toDouble().toInt()
+            var t = ""
+            if (tmp > 0){
+                t += "+"
+            }else if( tmp < 0){
+                t+="-"
+            }
+            return "$t$tmp"
         }
 
         fun parseDaily(json: JSONArray) {
@@ -458,11 +482,5 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
-
-
-//        var qwe = TEST("vasya",2,false,"qwe")
-//        var gson = Gson()
-//        val jsonString = gson.toJson(TEST("vasya",2,false,"qwe"))
-//        println("---------"+jsonString)
 
 
