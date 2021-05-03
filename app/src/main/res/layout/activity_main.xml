@@ -25,6 +25,9 @@
 
             <FrameLayout
                 android:id="@+id/header_layout"
+                android:background="@drawable/item_teme"
+                android:layout_margin="5dp"
+                android:padding="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

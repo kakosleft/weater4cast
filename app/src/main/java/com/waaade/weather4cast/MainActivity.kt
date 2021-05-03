@@ -438,7 +438,7 @@ class MainActivity : AppCompatActivity() {
         fun parseDaily(json: JSONArray) {
             WeatherData.daily.clear()
 
-            for (i in 0 until json.length()) {
+            for (i in 1 until json.length()) {
 
                 val qwe = json.getJSONObject(i)
                 val zxc = qwe.getJSONArray("weather").getJSONObject(0)
@@ -446,23 +446,26 @@ class MainActivity : AppCompatActivity() {
                 val temp = qwe.getJSONObject("temp")
                 val feelsLike = qwe.getJSONObject("feels_like")
 
+                val sdf = SimpleDateFormat("EEEE", Locale.ENGLISH)
+                val dayOfWeek = sdf.format(Date(qwe.get("dt").toString().toLong() * 1000))
+
                 val dailyWeather = DailyWeather(
-                        dt = qwe.get("dt").toString(),
+                        dt = dayOfWeek,
                         sunrise = qwe.get("sunrise").toString(),
                         sunset = qwe.get("sunset").toString(),
                         temp = Temp(
-                                day = temp.get("day").toString(),
-                                min = temp.get("min").toString(),
-                                max = temp.get("max").toString(),
-                                eve = temp.get("eve").toString(),
-                                night = temp.get("night").toString(),
-                                morn = temp.get("morn").toString()
+                                day = parseTemp(temp.get("day").toString()),
+                                min = parseTemp(temp.get("min").toString()),
+                                max = parseTemp(temp.get("max").toString()),
+                                eve = parseTemp(temp.get("eve").toString()),
+                                night = parseTemp(temp.get("night").toString()),
+                                morn = parseTemp(temp.get("morn").toString())
                         ),
                         feels_like = FeelsLike(
-                                day = feelsLike.get("day").toString(),
-                                eve = feelsLike.get("eve").toString(),
-                                morn = feelsLike.get("morn").toString(),
-                                night = feelsLike.get("night").toString()
+                                day = parseTemp(feelsLike.get("day").toString()),
+                                eve = parseTemp(feelsLike.get("eve").toString()),
+                                morn = parseTemp(feelsLike.get("morn").toString()),
+                                night = parseTemp(feelsLike.get("night").toString())
                         ),
                         humidity = qwe.get("humidity").toString(),
                         wind_speed = qwe.get("wind_speed").toString(),

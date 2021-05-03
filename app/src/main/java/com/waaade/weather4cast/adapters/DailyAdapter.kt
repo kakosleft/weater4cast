@@ -28,9 +28,13 @@ class DailyAdapter(private val dataSet: MutableList<DailyWeather>) :
         val feels_like_night: TextView
 
         val ico: ImageView
+        val dt: TextView
+        val description: TextView
 
 
         init {
+            description = view.findViewById(R.id.daily_description)
+            dt = view.findViewById(R.id.daily_dt)
             temp_min = view.findViewById(R.id.daily_temp_min)
             temp_max = view.findViewById(R.id.daily_temp_max)
             temp_morn = view.findViewById(R.id.daily_temp_morn)
@@ -55,7 +59,8 @@ class DailyAdapter(private val dataSet: MutableList<DailyWeather>) :
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
+        viewHolder.description.text = dataSet[position].description
+        viewHolder.dt.text = dataSet[position].dt
         viewHolder.temp_min.text = dataSet[position].temp.min
         viewHolder.temp_max.text = dataSet[position].temp.max
         viewHolder.temp_morn.text = dataSet[position].temp.morn
