@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@drawable/item_teme"
-    android:layout_height="wrap_content">
+    android:background="@drawable/item_teme">
 
 
     <TextView
@@ -15,6 +15,7 @@
         android:layout_marginTop="72dp"
         android:layout_marginEnd="20dp"
         android:text="min"
+        android:textColor="@color/text_color"
         android:textSize="20dp"
         app:layout_constraintEnd_toStartOf="@+id/daily_icon"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,6 +27,7 @@
         android:layout_marginTop="72dp"
         android:layout_marginEnd="80dp"
         android:text="max"
+        android:textColor="@color/text_color"
         android:textSize="20dp"
         app:layout_constraintEnd_toStartOf="@+id/daily_icon"
         app:layout_constraintTop_toTopOf="parent" />
@@ -37,6 +39,7 @@
         android:layout_margin="10dp"
         android:layout_marginHorizontal="5dp"
         android:text="day"
+        android:textColor="@color/text_color"
         android:textSize="20dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toStartOf="@+id/daily_description"
@@ -52,6 +55,7 @@
         android:layout_marginHorizontal="5dp"
         android:layout_marginTop="10dp"
         android:text="description"
+        android:textColor="@color/text_color"
         android:textSize="20dp"
         app:layout_constraintEnd_toStartOf="@+id/daily_icon"
         app:layout_constraintHorizontal_bias="1.0"
@@ -79,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="morn"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
             <TextView
@@ -87,6 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="morn"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
             <TextView
@@ -96,6 +102,7 @@
                 android:layout_marginHorizontal="5dp"
                 android:alpha="0.4"
                 android:text="morn"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
 
@@ -113,6 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="day"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
             <TextView
@@ -121,6 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="day"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
 
@@ -131,6 +140,7 @@
                 android:layout_marginHorizontal="5dp"
                 android:alpha="0.4"
                 android:text="day"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
 
@@ -147,6 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="eve"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
             <TextView
@@ -155,6 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="eve"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
 
@@ -165,6 +177,7 @@
                 android:layout_marginHorizontal="5dp"
                 android:alpha="0.4"
                 android:text="eve"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
 
@@ -182,6 +195,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="night"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
             <TextView
@@ -190,6 +204,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="night"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
             <TextView
@@ -199,6 +214,7 @@
                 android:layout_marginHorizontal="5dp"
                 android:alpha="0.4"
                 android:text="night"
+                android:textColor="@color/text_color"
                 android:textSize="15dp" />
 
 

@@ -26,6 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="wind : "
+            android:textColor="@color/text_color"
             android:textSize="20dp" />
 
         <TextView
@@ -33,7 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="speed"
-            android:textSize="20dp"/>
+            android:textColor="@color/text_color"
+            android:textSize="20dp" />
 
         <ImageView
             android:id="@+id/head_wind_deg"
@@ -49,6 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="humidity : "
+        android:textColor="@color/text_color"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -62,6 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="21"
+        android:textColor="@color/text_color"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,6 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="21"
+        android:textColor="@color/text_color"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -88,6 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="visibility : "
+        android:textColor="@color/text_color"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,6 +108,7 @@
         android:layout_height="wrap_content"
         android:hint="temp"
         android:text="+23"
+        android:textColor="@color/text_color"
         android:textSize="70dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -115,6 +122,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="feels like : "
+        android:textColor="@color/text_color"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -128,6 +136,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="+21"
+        android:textColor="@color/text_color"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -151,6 +160,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="description"
+        android:textColor="@color/text_color"
         android:textSize="27dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
