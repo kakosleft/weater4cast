@@ -372,6 +372,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        @SuppressLint("SimpleDateFormat")
         fun parseHourly(json: JSONArray) {
 
             WeatherData.hourly.clear()
@@ -396,11 +397,11 @@ class MainActivity : AppCompatActivity() {
 
                 val sdf = SimpleDateFormat("HH:mm")
 
-                var now = Calendar.getInstance()
-                var dt_ = Calendar.getInstance()
+                val now = Calendar.getInstance()
+                val dt_ = Calendar.getInstance()
                 dt_.timeInMillis = dt.toLong() * 1000
 
-                var day = if(now.get(Calendar.DATE) == dt_.get(Calendar.DATE)){
+                val day = if(now.get(Calendar.DATE) == dt_.get(Calendar.DATE)){
                     "today"
                 }else{
                     "tomorrow"
