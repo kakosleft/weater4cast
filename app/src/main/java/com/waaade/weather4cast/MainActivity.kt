@@ -1,30 +1,33 @@
-/*****************************************************
+/**
  * в этом проекте для хранения api ключа используется
  * файл под названием API_KEY, если вы хотите запустить
  * этот проект то создайте API_KEY.kt и создайте в нем
  * публичную переменную key. Переменной key присвойте
  * значение вашего OpenWeather one api ключа
- ******************************************************/
+*/
 
 package com.waaade.weather4cast
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.widget.Button
+import android.provider.Settings
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.waaade.weather4cast.fragments.FragmentBodyDaily
 import com.waaade.weather4cast.fragments.FragmentBodyHourly
 import com.waaade.weather4cast.fragments.FragmentHeader
 import com.waaade.weather4cast.models.*
+import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -33,16 +36,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 class MainActivity : AppCompatActivity() {
     lateinit var locationManager: LocationManager
     private var hasGps = false
     private var hasNetwork = false
     private var locationGps: Location? = null
     private var locationNetwork: Location? = null
-
-    private lateinit var buttonHourly: Button
-    private lateinit var buttonDaily: Button
-    private lateinit var swipper: SwipeRefreshLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,23 +52,20 @@ class MainActivity : AppCompatActivity() {
         refreshScreenListener()
 
         initButtons()
-        requestPermissionsGPS()
-        getLocation()
     }
 
-    private fun refreshScreenListener() {
-        swipper = findViewById(R.id.swipeToRefresh)
-        swipper.setOnRefreshListener {
-            runOnline()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
 
         if (getCache("Weather_current") != "null") {
             runWithCache()
         } else {
+            runOnline()
+        }
+    }
+
+    private fun refreshScreenListener() {
+        swipeToRefresh.setOnRefreshListener {
             runOnline()
         }
     }
@@ -85,14 +82,11 @@ class MainActivity : AppCompatActivity() {
         val newDate: Long = Date().time / 1000
         println(newDate)
         val oldDate: Long = Date(WeatherData.current.dt.toLong()).time
-
-
         val seconds: Long = (newDate - oldDate)
         println(seconds)
         if (seconds > 600){
             runOnline()
         }
-
     }
 
     private fun runOnline(){
@@ -105,14 +99,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initButtons() {
-        buttonDaily = findViewById(R.id.btn_daily)
-        buttonHourly = findViewById(R.id.btn_hourly)
-
-        buttonHourly.setOnClickListener {
+        btn_hourly.setOnClickListener {
             setBodyHourlyFragment()
         }
 
-        buttonDaily.setOnClickListener {
+        btn_daily.setOnClickListener {
             setBodyDailyFragment()
         }
     }
@@ -153,24 +144,67 @@ class MainActivity : AppCompatActivity() {
             hasGps -> {
                 getLocationByGPS()
             }
-            hasNetwork -> {
-                getLocationByNetwork()
-            }
             else -> {
-                locationGps = getLocationCache()
+                if(getLocationCache()!=null){
+                    locationGps = getLocationCache()
+                } else{
+                    openLocationSettingsAlert()
+                }
             }
         }
     }
 
-    @SuppressLint("MissingPermission")
+    private fun openLocationSettingsAlert() {
+        val builder = AlertDialog.Builder(this)
+        builder.setPositiveButton("yes"){ _,_ ->
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent)
+        }
+        builder.setNegativeButton("exit"){_,_ ->
+            finish()
+        }
+        builder.setTitle("GPS is disabled")
+        builder.setMessage("Please enable GPS on your device")
+        builder.create().show()
+    }
+
+    private fun showPermissionRequestAlert() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage("Please allow the application to access the location")
+        builder.setPositiveButton("allow"){ _, _ ->
+            requestPermissionsGPS()
+        }
+        builder.setNegativeButton("No"){ _, _ ->
+            finish()
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
     private fun getLocationByGPS() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if(!checkPermissions()) {
+                showPermissionRequestAlert()
+            }
+            return
+        }
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 5000,
                 0F,
                 object :
                         LocationListener {
-                    override fun onLocationChanged(location: Location) {}
+                    override fun onLocationChanged(location: Location) {
+                        locationGps = location
+                    }
                     override fun onStatusChanged(
                             provider: String?,
                             status: Int,
@@ -254,13 +288,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getLocationCache(): Location? {
-        val loc = Location(getCache("Location_provider"))
-        loc.latitude = getCache("Location_lat").toDouble()
-        loc.longitude = getCache("Location_lon").toDouble()
-        return if (loc.provider == "null") {
-            null
-        } else {
-            loc
+        if(getCache("Location_lat") != "null"){
+            val loc = Location(getCache("Location_provider"))
+            loc.latitude = getCache("Location_lat").toDouble()
+            loc.longitude = getCache("Location_lon").toDouble()
+            return if (loc.provider == "null") {
+                null
+            } else {
+                loc
+            }
+        }else{
+            return null
         }
     }
 
@@ -339,7 +377,7 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
                         setHeadFragment()
                         setBodyHourlyFragment()
-                        swipper.isRefreshing = false
+                        swipeToRefresh.isRefreshing = false
                     }
                     saveWeatherCache()
                 }
@@ -473,7 +511,7 @@ class MainActivity : AppCompatActivity() {
                         wind_deg = qwe.get("wind_deg").toString(),
                         description = zxc.get("description").toString(),
                         icon = zxc.get("icon").toString(),
-                        uvi = qwe.get("uvi").toString()
+                        uvi = qwe.get("uvi").toString() 
                 )
 
                 WeatherData.daily.add(dailyWeather)
