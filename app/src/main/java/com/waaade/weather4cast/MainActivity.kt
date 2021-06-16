@@ -203,6 +203,14 @@ class MainActivity : AppCompatActivity() {
                         LocationListener {
                     override fun onLocationChanged(location: Location) {
                         locationGps = location
+                        if(WeatherData.current.dt == "null"){
+                            runOnline()
+                        }
+                    }
+
+                    override fun onProviderDisabled(provider: String) {
+                        runWithCache()
+
                     }
                     override fun onStatusChanged(
                             provider: String?,
