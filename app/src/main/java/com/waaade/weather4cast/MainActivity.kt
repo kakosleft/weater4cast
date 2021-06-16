@@ -21,8 +21,12 @@ import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.waaade.weather4cast.adapters.ViewPagerAdapter
 import com.waaade.weather4cast.fragments.FragmentBodyDaily
 import com.waaade.weather4cast.fragments.FragmentBodyHourly
 import com.waaade.weather4cast.fragments.FragmentHeader
@@ -44,6 +48,10 @@ class MainActivity : AppCompatActivity() {
     private var locationGps: Location? = null
     private var locationNetwork: Location? = null
 
+    private lateinit var adapter: ViewPagerAdapter
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +59,19 @@ class MainActivity : AppCompatActivity() {
 
         refreshScreenListener()
 
-        initButtons()
+        adapter = ViewPagerAdapter(this)
+        viewPager = findViewById(R.id.pager)
+        viewPager.adapter = adapter
+
+        tabLayout = findViewById(R.id.tab_layout)
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = if (position == 0){
+                "today"
+            }else{
+                "7 days"
+            }
+        }.attach()
+
     }
 
     override fun onResume() {
@@ -73,7 +93,6 @@ class MainActivity : AppCompatActivity() {
     private fun runWithCache() {
         getWeatherCache()
         setHeadFragment()
-        setBodyHourlyFragment()
         checkCacheUpToDate()
     }
 
@@ -98,29 +117,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initButtons() {
-        btn_hourly.setOnClickListener {
-            setBodyHourlyFragment()
-        }
-
-        btn_daily.setOnClickListener {
-            setBodyDailyFragment()
-        }
-    }
-
     private fun setHeadFragment() {
         val fragmentHeader = FragmentHeader()
         supportFragmentManager.beginTransaction().replace(R.id.header_layout, fragmentHeader).commit()
-    }
-
-    private fun setBodyHourlyFragment() {
-        val fragmentBodyHourly = FragmentBodyHourly()
-        supportFragmentManager.beginTransaction().replace(R.id.body_layout, fragmentBodyHourly).commit()
-    }
-
-    private fun setBodyDailyFragment() {
-        val fragmentBodyDaily = FragmentBodyDaily()
-        supportFragmentManager.beginTransaction().replace(R.id.body_layout, fragmentBodyDaily).commit()
     }
 
     private fun callWeather(location: Location) {
@@ -376,7 +375,6 @@ class MainActivity : AppCompatActivity() {
                     parseDaily(JSONObject(res).getJSONArray("daily"))
                     runOnUiThread {
                         setHeadFragment()
-                        setBodyHourlyFragment()
                         swipeToRefresh.isRefreshing = false
                     }
                     saveWeatherCache()
