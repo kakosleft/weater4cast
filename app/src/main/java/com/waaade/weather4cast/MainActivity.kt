@@ -18,9 +18,14 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -48,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     private var locationGps: Location? = null
     private var locationNetwork: Location? = null
 
+    lateinit var progressBar: ProgressBar
     private lateinit var adapter: ViewPagerAdapter
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
@@ -59,6 +65,8 @@ class MainActivity : AppCompatActivity() {
 
         refreshScreenListener()
 
+        progressBar=findViewById(R.id.progress_bar)
+        progressBar.visibility = View.VISIBLE
         adapter = ViewPagerAdapter(this)
         viewPager = findViewById(R.id.pager)
         viewPager.adapter = adapter
@@ -91,6 +99,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun runWithCache() {
+        progressBar.visibility = View.GONE
         getWeatherCache()
         setHeadFragment()
         checkCacheUpToDate()
@@ -128,10 +137,6 @@ class MainActivity : AppCompatActivity() {
                 location.longitude.toString()
         )
         weather.getWeather()
-        println(
-                "______________" + location.latitude.toString()
-                        + "_____________" + location.longitude.toString()
-        )
     }
 
     private fun getLocation() {
@@ -142,6 +147,7 @@ class MainActivity : AppCompatActivity() {
         when {
             hasGps -> {
                 getLocationByGPS()
+                Log.i("_________________________________","has gps")
             }
             else -> {
                 if(getLocationCache()!=null){
@@ -270,8 +276,14 @@ class MainActivity : AppCompatActivity() {
                             android.Manifest.permission.ACCESS_FINE_LOCATION,
                             android.Manifest.permission.ACCESS_COARSE_LOCATION
                     ),
-                    2
+                    1
             )
+        }else{
+            if (getCache("Weather_current") != "null") {
+                runWithCache()
+            } else {
+                runOnline()
+            }
         }
     }
 
@@ -382,6 +394,7 @@ class MainActivity : AppCompatActivity() {
                     parseHourly(JSONObject(res).getJSONArray("hourly"))
                     parseDaily(JSONObject(res).getJSONArray("daily"))
                     runOnUiThread {
+                        progressBar.visibility = View.GONE
                         setHeadFragment()
                         swipeToRefresh.isRefreshing = false
                     }
@@ -528,7 +541,6 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-
 }
 
 
